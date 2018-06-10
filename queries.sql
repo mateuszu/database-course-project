@@ -1,10 +1,10 @@
-create table if not exists Employee(
-    id              serial primary key,
-    admin           integer default null,
-    passwd          text default null,
-    data            text,
+CREATE TABLE IF NOT EXISTS Employee(
+    id              serial PRIMARY KEY,
+    admin           integer default NULL,
+    passwd          text default NULL,
+    data            text NOT NULL,
     newpasswd       text,
-    emp1            integer default null,
+    emp1            integer default NULL,
     emp             integer
 );
 
