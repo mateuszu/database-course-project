@@ -2,6 +2,9 @@ import psycopg2
 import json
 import sys
 
+def remove_none_elements_from_list(list):
+    return [e for e in list if e != None]
+
 class Function:
     
     def __init__(self):
@@ -33,7 +36,7 @@ class Function:
             END
             $do$;         
             """
-            
+
             cursor.execute(create_user_app)
 
 
@@ -135,6 +138,136 @@ class Function:
         except Exception as e:
             print json.dumps({"status" : "ERROR"})
             print e #debug
+
+        return cursor
+
+    @staticmethod
+    def ancestors(json_line, cursor):
+        globals().update(json_line)
+    
+ 
+        query = """SELECT emp1 FROM Employee WHERE emp = %s """
+    
+        try:
+            cursor.execute(query,[emp])
+    
+            result_parent = cursor.fetchone()
+            result = []
+            result.append(result_parent)
+
+            while(result_parent > admin):  #ten warunek to chyba nie jest za dobrze...
+                cursor.execute(query,[result_parent])
+                result_parent = cursor.fetchone()
+                result.append(result_parent)
+
+            result = remove_none_elements_from_list(result)
+
+            flattened_result = []
+            for sublist in result:
+                for val in sublist:
+                    flattened_result.append(val)
+
+            flattened_result.sort()
+
+            result_dict = {
+                "status":"OK",
+                "data" : flattened_result
+                }
+            print json.dumps(result_dict)
+
+        except Exception as e:
+            print json.dumps({"status" : "ERROR"})
+            print e #debug
+
+        return cursor
+
+    @staticmethod
+    def ancestor(json_line, cursor):
+        globals().update(json_line)
+    
+ 
+        query = """SELECT emp1 FROM Employee WHERE emp = %s """
+    
+        try:
+            cursor.execute(query,[emp1])
+    
+            result_parent = cursor.fetchone()
+            result = []
+            result.append(result_parent)
+
+            while(result_parent > admin):  #ten warunek to chyba nie jest za dobrze...
+                cursor.execute(query,[result_parent])
+                result_parent = cursor.fetchone()
+                result.append(result_parent)
+
+            result = remove_none_elements_from_list(result)
+
+            flattened_result = []
+            for sublist in result:
+                for val in sublist:
+                    flattened_result.append(val)
+
+            result_flag = False
+
+            for x in range(0, len(flattened_result)):
+                if flattened_result[x] == emp2:
+                    result_flag = True
+                    break
+
+            result_dict = {
+                "status":"OK",
+                "data" : result_flag
+                }
+
+            print json.dumps(result_dict)
+
+        except Exception as e:
+            print json.dumps({"status" : "ERROR"})
+            print e #debug
+
+        return cursor
+
+    @staticmethod
+    def update(json_line, cursor):
+            globals().update(json_line)
+
+            query = """
+            UPDATE Employee SET data = %s
+            """
+
+            try:
+                cursor.execute(query, [newdata])
+            except Exception as e:
+                json.dumps({"status" : "ERROR"})
+                print e
+
+            return cursor
+
+    @staticmethod
+    def read(json_line, cursor):
+        globals().update(json_line)
+
+        query = """
+        SELECT data FROM Employee WHERE emp = %s
+        """
+
+        try:
+            cursor.execute(query, [emp])
+            result = cursor.fetchall()
+
+            flattened_result = ""
+            for sublist in result:
+                for val in sublist:
+                    flattened_result += str(val)
+
+            result_dict = {
+                "status":"OK",
+                "data" : flattened_result
+            }
+            print json.dumps(result_dict)
+        except Exception as e:
+            json.dumps({"status" : "ERROR"})
+            json.dumps()
 
         return cursor
 

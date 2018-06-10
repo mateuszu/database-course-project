@@ -1,3 +1,10 @@
 {"open": {"database": "student", "login": "app", "password": "qwerty"}}
 {"child": {"admin": 7, "passwd":"asd", "emp":0}}
 {"parent": {"admin": 8, "passwd":"asd", "emp":6}}
+{"ancestors": {"admin": 5, "passwd":"asd", "emp": 8}}
+{"ancestor": {"admin": 5, "passwd": "asd", "emp1":7, "emp2": 1}}
+{"ancestor": {"admin": 5, "passwd": "asd", "emp1":1, "emp2": 7}}
+{"update": {"admin": 3, "passwd": "asd", "emp":8, "newdata":"lvl3update"}}
+{"read": {"admin": 1, "passwd": "asd", "emp":8}}
+{"new": {"admin": 2, "newpasswd":"asd", "data":"lvl3new", "passwd":"asd", "emp1":6, "emp":9}}
+{"child": {"admin": 6, "passwd": "asd", "emp":6}}
