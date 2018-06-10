@@ -267,7 +267,53 @@ class Function:
             print json.dumps(result_dict)
         except Exception as e:
             json.dumps({"status" : "ERROR"})
-            json.dumps()
+            print e #debug
+
+        return cursor
+
+    @staticmethod
+    def descendants(json_line, cursor):
+        globals().update(json_line)
+
+        #query = "SELECT emp FROM employee WHERE emp1 = %s"
+
+        query = """
+        with recursive cte
+        as (select emp FROM employee as e
+        where emp1 = %s
+        UNION ALL
+        select e.emp
+        from employee as e
+        join cte
+        on e.emp1 = cte.emp
+        ) select * from cte;
+        """
+
+        try:
+            cursor.execute(query,[emp])
+            result = cursor.fetchall()
+
+            flattened_result = []
+
+            for sublist in result:
+                for val in sublist:
+                    flattened_result.append(val)
+
+            flattened_result_no_duplicates = []
+
+            for i in flattened_result:
+                if i not in flattened_result_no_duplicates:
+                    flattened_result_no_duplicates.append(i)
+
+            result_dict = {
+                "status":"OK",
+                "data" : flattened_result_no_duplicates
+            }
+
+            print json.dumps(result_dict)
+        except Exception as e:
+            print json.dumps({"status" : "ERROR"})
+            print e #debug
 
         return cursor
 

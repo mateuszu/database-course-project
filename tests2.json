@@ -8,3 +8,6 @@
 {"read": {"admin": 1, "passwd": "asd", "emp":8}}
 {"new": {"admin": 2, "newpasswd":"asd", "data":"lvl3new", "passwd":"asd", "emp1":6, "emp":9}}
 {"child": {"admin": 6, "passwd": "asd", "emp":6}}
+{"remove": {"admin":0, "passwd":"asd", "emp": 2}}
+{"child": {"admin": 7, "passwd":"asd", "emp":0}}
+{"descendants": {"admin": 8, "passwd":"asd", "emp":2}}
