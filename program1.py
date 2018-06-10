@@ -18,13 +18,30 @@ class Function:
         print "Connected!\n" #debug
 
         cursor = conn.cursor()
-        cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
-        f = open('queries.sql', 'r').read()
 
-        queries_list = f.split(';')
+        if login == 'init' and password == 'qwerty':
+            cursor.execute("""
+            DO
+            $do$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT                       
+                    FROM   pg_catalog.pg_roles
+                    WHERE  rolname = 'app') THEN
+                CREATE ROLE app LOGIN PASSWORD 'qwerty';
+            END IF;
+            END
+            $do$;         
+            """)
+            cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+            cursor.execute("GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO app")
+
+            f = open('queries.sql', 'r').read()
+
+            queries_list = f.split(';')
   
-        for c in queries_list[:-1]:
-            cursor.execute(c)
+            for c in queries_list[:-1]:
+                cursor.execute(c)
         
         print json.dumps({"status" : "OK"})
 
@@ -63,6 +80,39 @@ class Function:
             print json.dumps({"status" : "ERROR"})
             print "EMP OR EMP1 < 0" #debug
 
+    @staticmethod
+    def child(json_line, cursor):
+        globals().update(json_line)
+        query = """ SELECT emp FROM Employee WHERE emp1 = %s"""
+        
+        try:
+            cursor.execute(query,[emp])
+            result = cursor.fetchall()
+
+            flattened_result = []
+
+            for sublist in result:
+                for val in sublist:
+                    flattened_result.append(val)
+
+            flattened_result_no_duplicates = []
+
+            for i in flattened_result:
+                if i not in flattened_result_no_duplicates:
+                    flattened_result_no_duplicates.append(i)
+
+            result_dict = {
+                "status":"OK",
+                "data" : flattened_result_no_duplicates
+            }
+
+            print json.dumps(result_dict)
+        except Exception as e:
+            print json.dumps({"status" : "ERROR"})
+            print e #debug
+
+        return cursor
+
 
 
 def main():
@@ -72,6 +122,8 @@ def main():
         function_name = json.loads(line).keys()[0]
         print line #debug
 
+        function_name = json.loads(line).keys()[0]
+
         if function_name == 'open':
             try:
                 cursor = getattr(Function, function_name)(json.loads(line)[function_name])
@@ -79,12 +131,12 @@ def main():
                 print {"status" : "NOT IMPLEMENTED"}
                 print e #debug
         else:
-                getattr(Function, function_name)(json.loads(line)[function_name], cursor)
-                try:
-                    pass#getattr(Function, function_name)(json.loads(line)[function_name], cursor)
-                except Exception as e:
-                    print {"status" : "NOT IMPLEMENTED"}
-                    print e #debug
+            getattr(Function, function_name)(json.loads(line)[function_name], cursor)
+            try:
+                pass#getattr(Function, function_name)(json.loads(line)[function_name], self.cursor)
+            except Exception as e:
+                print {"status" : "NOT IMPLEMENTED"}
+                print e #debug
 
 if __name__ == "__main__":
     main()
