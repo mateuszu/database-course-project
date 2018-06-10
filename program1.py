@@ -20,7 +20,7 @@ class Function:
         cursor = conn.cursor()
 
         if login == 'init' and password == 'qwerty':
-            cursor.execute("""
+            create_user_app = """
             DO
             $do$
             BEGIN
@@ -32,9 +32,10 @@ class Function:
             END IF;
             END
             $do$;         
-            """)
-            cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
-            cursor.execute("GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO app")
+            """
+            
+            cursor.execute(create_user_app)
+
 
             f = open('queries.sql', 'r').read()
 
@@ -106,6 +107,30 @@ class Function:
                 "data" : flattened_result_no_duplicates
             }
 
+            print json.dumps(result_dict)
+        except Exception as e:
+            print json.dumps({"status" : "ERROR"})
+            print e #debug
+
+        return cursor
+
+    @staticmethod
+    def parent(json_line, cursor):
+        globals().update(json_line)
+        query = """SELECT emp1 FROM Employee WHERE emp = %s """
+        try:
+            cursor.execute(query,[emp])
+            result = cursor.fetchall()
+
+            flattened_result = ""
+            for sublist in result:
+                for val in sublist:
+                    flattened_result += str(val)
+        
+            result_dict = {
+                "status":"OK",
+                "data" : flattened_result
+            }
             print json.dumps(result_dict)
         except Exception as e:
             print json.dumps({"status" : "ERROR"})

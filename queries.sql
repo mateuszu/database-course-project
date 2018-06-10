@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS Employee(
     id              serial PRIMARY KEY,
     admin           integer default NULL,
@@ -8,4 +10,4 @@ CREATE TABLE IF NOT EXISTS Employee(
     emp             integer
 );
 
-
+ GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO app;

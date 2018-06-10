@@ -1,0 +1,3 @@
+{"open": {"database": "student", "login": "app", "password": "qwerty"}}
+{"child": {"admin": 7, "passwd":"asd", "emp":0}}
+{"parent": {"admin": 8, "passwd":"asd", "emp":6}}
