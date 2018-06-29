@@ -1,3 +1,8 @@
+# Mateusz Ujda
+# 282624
+# wersja poprawiona, teraz wszystko dziala zgodnie ze specyfikacja (autoryzacja rowniez)
+
+
 import psycopg2
 import json
 import sys
@@ -21,6 +26,7 @@ def admin_auth(admin, employee_id, pwd, cursor):
 
 
     if pass_auth(admin, pwd, cursor):
+
         cursor.execute(query,[employee_id])
         result_parent = cursor.fetchone()
         result = []
@@ -37,6 +43,7 @@ def admin_auth(admin, employee_id, pwd, cursor):
         for sublist in result:
             for val in sublist:
                 flattened_result.append(val)
+
         if admin in flattened_result:
             return True
         else:
@@ -205,7 +212,7 @@ class Function:
     
         query = """SELECT superior FROM Employee WHERE id = %s """
 
-        if pass_auth(admin, passwd, cursor):
+        if pass_auth(admin, passwd, cursor):  
             try:
                 cursor.execute(query,[emp])
         
@@ -298,8 +305,11 @@ class Function:
         globals().update(json_line)
 
         query = "UPDATE Employee SET data = %s"
-        
-        if pass_auth(admin, passwd, cursor) or admin_auth(admin, emp, passwd, cursor): 
+        is_employer_query = "SELECT superior FROM Employee WHERE id = %s"
+
+        cursor.execute(is_employer_query, (admin,))
+
+        if cursor.fetchone() == emp or admin_auth(admin, emp, passwd, cursor): 
                 
             try:
                 cursor.execute(query, [newdata])
@@ -319,8 +329,11 @@ class Function:
         globals().update(json_line)
 
         query = "SELECT data FROM Employee WHERE id = %s"
+        is_employer_query = "SELECT superior FROM Employee WHERE id = %s"
 
-        if pass_auth(admin, passwd, cursor) or admin_auth(admin. emp, passwd, cursor):
+        cursor.execute(is_employer_query, (admin,))
+
+        if (cursor.fetchone() == emp) or admin_auth(admin, emp, passwd, cursor):
                 
             try:
                 cursor.execute(query, [emp])
@@ -430,7 +443,7 @@ def main():
     for line in sys.stdin:
 
         function_name = json.loads(line).keys()[0]
-        #print line #debug
+        #print line #debug prints every JSON line from file
 
         function_name = json.loads(line).keys()[0]
 
