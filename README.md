@@ -1,6 +1,6 @@
 # Usage
 
-- first run - program called with the --init parameter with following function names:    
+- first run - program called with the --init parameter with following:    
 database: "student",  
 login: "init",   
 password: "qwerty"  
