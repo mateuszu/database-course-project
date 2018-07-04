@@ -1,8 +1,3 @@
-# Mateusz Ujda
-# 282624
-# wersja poprawiona, teraz wszystko dziala zgodnie ze specyfikacja (autoryzacja rowniez)
-
-
 import psycopg2
 import json
 import sys
